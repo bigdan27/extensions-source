@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.extension.all.yournamehere
+package eu.kanade.tachiyomi.extension.all.pornpics
 
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.SChapter
@@ -9,7 +9,7 @@ import okhttp3.Request
 import org.jsoup.nodes.Element
 import eu.kanade.tachiyomi.network.as->
 
-class YourSource : ParsedHttpSource() {
+class PornpicsSource : ParsedHttpSource() {
 
     // ==========================================================
     //            @START_OF_CHANGES_HERE
@@ -17,14 +17,11 @@ class YourSource : ParsedHttpSource() {
     //            The rest of the code should not be edited.
     // ==========================================================
 
-    // 1. BASIC INFORMATION
-    // @NAME_CHANGE: Give your extension a name. This will appear in Mihon's list.
-    override val name = "My Gallery Source"
 
-    // @URL_CHANGE: Put the main website address here.
-    override val baseUrl = "https://www.your-gallery-website.com"
+    override val name = "Pornpics"
 
-    // @LANG_CHANGE: Set the language. Use "en" for English.
+    override val baseUrl = "https://www.pornpics.com/"
+
     override val lang = "en"
 
     // 2. FEATURE TOGGLES
@@ -32,18 +29,16 @@ class YourSource : ParsedHttpSource() {
     // If you ever want to disable it, just change it back to 'false'.
     override val supportsLatest = true
 
-    // 3. LATEST UPDATES SECTION
-    // @URL_CHANGE: Change the part of the URL that gets you to the latest content.
-    // Example: if the latest page is "example.com/updates", change "/latest" to "/updates".
+
     override fun latestUpdatesRequest(page: Int): Request {
-        return GET("$baseUrl/latest?page=$page", headers)
+        return GET("$baseUrl/recent?page=$page", headers)
     }
 
     // @SELECTOR_CHANGE: This is the "container" code you found with the web inspector.
     // It's the big box that holds a single gallery item (image, title, link).
     // Example: "div.gallery-item"
     override fun latestUpdatesSelector(): String {
-        return "div.gallery-item"
+        return "lazy-load ll-loaded"
     }
 
     // @PARSING_CHANGE: This tells the code how to get the title, link, and image from each gallery item.
@@ -51,7 +46,7 @@ class YourSource : ParsedHttpSource() {
     override fun latestUpdatesFromElement(element: Element): SManga {
         val manga = SManga.create()
         manga.setUrlWithoutBaseUrl(element.select("a.gallery-link").first()!!.attr("href"))
-        manga.title = element.select("div.gallery-title").text()
+        manga.title = element.select("lazy-load ll-loaded").text()
         manga.thumbnail_url = element.select("img.gallery-cover").first()?.attr("src")
         return manga
     }
